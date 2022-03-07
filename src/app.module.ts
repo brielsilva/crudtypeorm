@@ -6,6 +6,7 @@ import { ContactsModule } from './contacts/contacts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { join } from 'path';
 
 @Module({
   imports: [ 
@@ -16,10 +17,11 @@ import { ConfigModule } from '@nestjs/config';
       port: 5432,
       password: 'mysecretpassword',
       username: 'postgres',
+      database: 'test',
       synchronize: true,
-      entities: [__dirname + '/../**/*.entity.{js,ts}']
+      entities: [join(__dirname, '**', '*.entity.{ts,js}')]
     }
-  ),UsersModule, ContactsModule],
+  )],
   controllers: [AppController],
   providers: [AppService],
 })
