@@ -23,7 +23,6 @@ export class ContactsService {
 
   async findAll(user: User) {
     const contacts = await this.contactsRepository.findOne(user.id);
-    console.log(contacts);
     return contacts;
   }
 

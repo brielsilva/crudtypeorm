@@ -7,11 +7,14 @@ import { AuthenticationService } from "./auth.service";
 import { LocalStrategy } from "./local.stratety";
 import {JwtModule} from '@nestjs/jwt';
 import { JwtStrategy } from "./jwt.strategy";
+import { UsersService } from "src/users/users.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "src/users/entities/user.entity";
 
 @Module({
     imports: [UsersModule,PassportModule,ConfigModule,JwtModule.registerAsync({
-        imports: [ConfigModule],
-        inject: [ConfigService],
+        imports: [],
+        inject: [],
         useFactory: async () => ({
             secret: 'dsahdusahdsa',
             signOptions: {

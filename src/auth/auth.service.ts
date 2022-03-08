@@ -1,20 +1,23 @@
-import { HttpException, HttpService, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import PostgresErrorCode from 'src/database/postgresErrorCode.enum';
 import { UsersService } from "src/users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { JwtService } from '@nestjs/jwt';
+import TokenPayload from './tokenPayload.interface';
 
+@Injectable()
 export class AuthenticationService {
     constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService) {}
 
     public getookieWithJwtToken(userId: number) {
+      console.log(userId);
         const payload: TokenPayload = { userId};
         const token = this.jwtService.sign(payload);
         return `Authentication=${token};  HttpOnly; Path=/; Max-Age=${5*60}`;
     }
     
-    public getCookietForLogOut(){
+    public getCookieForLogOut(){
         return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
     }
 
@@ -26,6 +29,7 @@ export class AuthenticationService {
                 password: hashedPassword
             });
             createdUser.password = undefined;
+            return createdUser;
         } catch(error) {
             if (error?.code === PostgresErrorCode.UniqueViolation) {
                 throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
@@ -48,8 +52,11 @@ export class AuthenticationService {
     //     }
     // }
     public async getAuthenticatedUser(email: string, plainTextPassword: string) {
-        try {
+      const user = await this.usersService.findByEmail(email);
+      console.log(user);
+      try {
           const user = await this.usersService.findByEmail(email);
+          console.log(user);
           await this.verifyPassword(plainTextPassword, user.password);
           user.password = undefined;
           return user;
@@ -63,6 +70,8 @@ export class AuthenticationService {
           plainTextPassword,
           hashedPassword
         );
+        console.log(plainTextPassword);
+        console.log(isPasswordMatching);
         if (!isPasswordMatching) {
           throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
         }

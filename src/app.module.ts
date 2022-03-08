@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
+import { AuthenticationModule } from './auth/auth.module';
 
 @Module({
   imports: [ 
@@ -21,7 +22,7 @@ import { join } from 'path';
       synchronize: true,
       entities: [join(__dirname, '**', '*.entity.{ts,js}')]
     }
-  ), UsersModule, ContactsModule],
+  ), UsersModule, ContactsModule, AuthenticationModule],
   controllers: [AppController],
   providers: [AppService],
 })
