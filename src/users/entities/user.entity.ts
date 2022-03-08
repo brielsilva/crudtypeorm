@@ -1,8 +1,8 @@
 import { Contact } from "src/contacts/entities/contact.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class User {
+@Entity('users')
+export class User extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -15,6 +15,7 @@ export class User {
     @Column({ unique: true, nullable: false})
     email: string
 
-    @OneToMany(() => Contact, contact => contact.user) contacts: Contact[];
+    @OneToMany(() => Contact,(contact: Contact) => contact.user, {cascade: true,eager: true}) 
+    contacts: Contact[];
 
 }

@@ -23,9 +23,9 @@ export class UsersService {
 
   async findByEmail(email: string) {
     const user = await this.usersRepository.findOne({ email })
-    if(!user) {
-      throw new HttpException('Email not found',HttpStatus.NOT_FOUND);
-    }    
+    if(user) {
+      throw new HttpException('Email already in use',HttpStatus.NOT_FOUND);
+    }   
     return user;
   }
 

@@ -11,8 +11,10 @@ export class ContactsController {
   constructor(private readonly contactsService: ContactsService, @InjectRepository(User) private usersRepository: Repository<User>) {}
 
   @Post()
-  create(@Body() createContactDto: CreateContactDto) {
-    return this.contactsService.create(createContactDto);
+  async create(@Body() createContactDto: CreateContactDto) {
+    const user = await this.usersRepository.findOne(createContactDto.idUser);
+
+    return await this.contactsService.create(createContactDto,user);
   }
 
   @Get()

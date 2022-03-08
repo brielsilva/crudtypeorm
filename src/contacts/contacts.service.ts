@@ -11,8 +11,13 @@ export class ContactsService {
 
   constructor(@InjectRepository(Contact) private contactsRepository: Repository<Contact>) {}
 
-  async create(createContactDto: CreateContactDto) {
-    const contact = await this.contactsRepository.create(createContactDto);
+  async create(createContactDto: CreateContactDto, user: User) {
+    const contact = await this.contactsRepository.create({
+      ...createContactDto,
+      user: user,
+    });
+    await this.contactsRepository.save(contact);
+    
     return contact;
   }
 
