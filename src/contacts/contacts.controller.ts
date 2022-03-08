@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import JwtAuthenticationGuard from 'src/auth/jwt-authentication.guard';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { ContactsService } from './contacts.service';
@@ -11,6 +12,7 @@ export class ContactsController {
   constructor(private readonly contactsService: ContactsService, @InjectRepository(User) private usersRepository: Repository<User>) {}
 
   @Post()
+  @UseGuards(JwtAuthenticationGuard)
   async create(@Body() createContactDto: CreateContactDto) {
     const user = await this.usersRepository.findOne(createContactDto.idUser);
 
