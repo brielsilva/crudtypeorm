@@ -21,7 +21,7 @@ import { join } from 'path';
       synchronize: true,
       entities: [join(__dirname, '**', '*.entity.{ts,js}')]
     }
-  )],
+  ), UsersModule, ContactsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -7,9 +7,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get()
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users;
+  }
+
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    const emailExist = this.usersService.findByEmail(createUserDto.email);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const emailExist = await this.usersService.findByEmail(createUserDto.email);
     if(emailExist) {
       throw new HttpException('Email is in use', HttpStatus.NOT_ACCEPTABLE);
     }
@@ -17,7 +23,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findById(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.usersService.findById(+id);
   }
 }

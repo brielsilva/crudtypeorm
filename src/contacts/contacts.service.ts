@@ -4,18 +4,22 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 import { Contact } from './entities/contact.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ContactsService {
 
   constructor(@InjectRepository(Contact) private contactsRepository: Repository<Contact>) {}
 
-  create(createContactDto: CreateContactDto) {
-    return 'This action adds a new contact';
+  async create(createContactDto: CreateContactDto) {
+    const contact = await this.contactsRepository.create(createContactDto);
+    return contact;
   }
 
-  findAll() {
-    return `This action returns all contacts`;
+  async findAll(user: User) {
+    const contacts = await this.contactsRepository.findOne(user.id);
+    console.log(contacts);
+    return contacts;
   }
 
   findOne(id: number) {

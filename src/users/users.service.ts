@@ -9,6 +9,11 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
   
+  async findAll() {
+    const users = await this.usersRepository.find();
+    return users;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const newUser = await this.usersRepository.create(createUserDto);
     await this.usersRepository.save(newUser);
