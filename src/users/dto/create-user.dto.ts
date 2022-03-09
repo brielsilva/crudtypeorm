@@ -4,4 +4,7 @@ export class CreateUserDto {
     email: string;
     password: string;
     name: string;
+    authConfirmToken: string;
+    isVerified: boolean;
+    roles: string;
 }

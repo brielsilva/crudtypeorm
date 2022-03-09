@@ -27,6 +27,12 @@ export class AuthenticationController {
         return response.send(user);
     }
 
+    @Post('verify')
+    @Post('/verify')
+    async Verify(@Body() body) {
+      return await this.authenticationService. verifyAccount(body.code)
+    }
+
     @UseGuards(JwtAuthenticationGuard)
     @Post('log-out')
     async logOut(@Req() request: RequestWithUSer, @Res() response: Response) {

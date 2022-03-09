@@ -1,5 +1,5 @@
 import { Contact } from "src/contacts/entities/contact.entity";
-import { BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User extends BaseEntity{
@@ -15,7 +15,18 @@ export class User extends BaseEntity{
     @Column({ unique: true, nullable: false})
     email: string
 
+    @Column({select: false, nullable: true})
+    authConfirmToken: string
+
+    @Column({default: false, nullable: true})
+    isVerified: boolean;
+
     @OneToMany(() => Contact,(contact: Contact) => contact.user, {cascade: true,eager: true}) 
     contacts: Contact[];
 
+    @CreateDateColumn()
+    createdAt: Date
+
+    @Column()
+    roles: string
 }
