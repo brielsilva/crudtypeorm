@@ -10,6 +10,7 @@ import { JwtStrategy } from "./jwt.strategy";
 import { UsersService } from "src/users/users.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
+import { GraphqlJwtAuthGuard } from "./graphql-jwt.auth.guard";
 
 @Module({
     imports: [UsersModule,PassportModule,ConfigModule,JwtModule.registerAsync({
@@ -23,7 +24,8 @@ import { User } from "src/users/entities/user.entity";
         })
     })],
     providers: [AuthenticationService, LocalStrategy, JwtStrategy],
-    controllers: [AuthenticationController]
+    controllers: [AuthenticationController],
+    exports: [AuthenticationService]
 })
 
 export class AuthenticationModule {}

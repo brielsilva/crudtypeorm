@@ -1,0 +1,22 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Contact {
+  id: Int!
+  name: String!
+  phone: String!
+}
+
+type Query {
+  contact: [Contact!]!
+}
+
+type Mutation {
+  createContact(input: CreateContactInput!): Contact!
+}
+
+input CreateContactInput {
+  name: String!
+  phone: String!
+}

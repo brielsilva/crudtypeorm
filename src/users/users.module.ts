@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  controllers: [], // Desabilitado enquanto Admin Roles não estão setadas
+  //controllers: [], // Desabilitado enquanto Admin Roles não estão setadas
   providers: [UsersService],
   exports: [UsersService]
 })

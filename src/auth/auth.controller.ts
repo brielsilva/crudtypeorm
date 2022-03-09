@@ -20,9 +20,7 @@ export class AuthenticationController {
     @UseGuards(LocalAuthenticationGuard)
     @Post('log-in')
     async logIn(@Req() request: RequestWithUSer, @Res() response: Response) {
-        console.log(request);
         const user = request.user;
-        console.log(user);
         const cookie = this.authenticationService.getookieWithJwtToken(user.id);
         response.setHeader('Set-Cookie',cookie);
         user.password = undefined;

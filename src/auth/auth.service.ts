@@ -11,7 +11,6 @@ export class AuthenticationService {
     constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService) {}
 
     public getookieWithJwtToken(userId: number) {
-      console.log(userId);
         const payload: TokenPayload = { userId};
         const token = this.jwtService.sign(payload);
         return `Authentication=${token};  HttpOnly; Path=/; Max-Age=${5*60}`;
@@ -52,11 +51,8 @@ export class AuthenticationService {
     //     }
     // }
     public async getAuthenticatedUser(email: string, plainTextPassword: string) {
-      const user = await this.usersService.findByEmail(email);
-      console.log(user);
       try {
           const user = await this.usersService.findByEmail(email);
-          console.log(user);
           await this.verifyPassword(plainTextPassword, user.password);
           user.password = undefined;
           return user;
@@ -70,8 +66,7 @@ export class AuthenticationService {
           plainTextPassword,
           hashedPassword
         );
-        console.log(plainTextPassword);
-        console.log(isPasswordMatching);
+
         if (!isPasswordMatching) {
           throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
         }

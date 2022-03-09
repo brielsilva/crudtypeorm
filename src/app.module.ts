@@ -8,10 +8,22 @@ import { Connection } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { AuthenticationModule } from './auth/auth.module';
+import {GraphQLModule} from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ContactResolver } from './contacts/contact.resolver';
 
 @Module({
   imports: [ 
-    ConfigModule.forRoot({ isGlobal: true })
+    ConfigModule.forRoot({ isGlobal: true }),
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      imports: [],
+      inject: [],
+      driver: ApolloDriver,
+      useFactory: () => ({
+        playground: Boolean(1),
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      })
+    })
     ,TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -24,7 +36,7 @@ import { AuthenticationModule } from './auth/auth.module';
     }
   ), UsersModule, ContactsModule, AuthenticationModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ContactResolver],
 })
 export class AppModule {
   constructor(private connection: Connection) {}
