@@ -9,6 +9,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { User } from 'src/users/entities/user.entity';
 import { Roles } from 'src/users/entities/roles.decorator';
 import { Role } from 'src/users/entities/roles.enum';
+import * as sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class AuthenticationService {
@@ -26,8 +27,16 @@ export class AuthenticationService {
     async sendConfirmationEmail(user: User) {
       const {email, name} = await user;
       console.log(email);
+      sgMail.setApiKey(`${process.env.PASS}`);
       try {
-        const result = await this.mailerService.sendMail({
+        const something = await sgMail.send({
+          to: email,
+          subject: 'Authenticate User! Confirm Email',
+          from: 'gabrielcostasilva500@gmail.com',
+          text: `${this.code}`,
+        });
+        console.log(something);
+        /* const result = await this.mailerService.sendMail({
           to: email,
           subject: 'Welcome to CRUD API! Confirm Email',
           template: 'confirm',
@@ -35,10 +44,9 @@ export class AuthenticationService {
             name,
             code: this.code
           }
-        });
-        console.log(result);
+        }); */
       } catch(err) {
-        console.log(err);
+        console.log(err.response.body);
       }
     }
     

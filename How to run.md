@@ -8,6 +8,8 @@ Dentro do terminal criar o banco de dados a ser usado:
 
 CREATE DATABASE test;
 
+Criar .env - Pôr as credênciais do sendgrid - Notion
+
 Rodar o comando npm run start:dev
 
 Acesso ao db com typeorm

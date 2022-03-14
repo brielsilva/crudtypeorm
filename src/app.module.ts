@@ -40,18 +40,14 @@ import * as nodemailer from 'nodemailer';
     }
   ), UsersModule, ContactsModule, AuthenticationModule, MailerModule.forRoot({   
     transport: {
-      host: "smtp.gmail.com",
-      port: 565,
+      service: 'SendGrid',
+      port: 465,
       secure: false,
       auth: {
         user: process.env.USER,
         pass: process.env.PASS
-      },
-      tls: { rejectUnauthorized: false}
-    },
-    defaults: {
-      from: `"No Reply" ${process.env.USER}`
-    },
+      }     
+    },    
     template: {
       dir: join(__dirname, "../src/views/email-templates"),
        adapter: new HandlebarsAdapter(), 
