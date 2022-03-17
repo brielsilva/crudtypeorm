@@ -13,11 +13,11 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ContactResolver } from './contacts/contact.resolver';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import * as nodemailer from 'nodemailer';
+import config from './config';
 @Module({
   imports: [ 
     ConfigModule.forRoot({
-     isGlobal: true
+      envFilePath: '../development.env'
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       imports: [],
@@ -38,24 +38,7 @@ import * as nodemailer from 'nodemailer';
       synchronize: true,
       entities: [join(__dirname, '**', '*.entity.{ts,js}')]
     }
-  ), UsersModule, ContactsModule, AuthenticationModule, MailerModule.forRoot({   
-    transport: {
-      service: 'SendGrid',
-      port: 465,
-      secure: false,
-      auth: {
-        user: process.env.USER,
-        pass: process.env.PASS
-      }     
-    },    
-    template: {
-      dir: join(__dirname, "../src/views/email-templates"),
-       adapter: new HandlebarsAdapter(), 
-       options: {
-         strict: true,
-       },
-    }
-  })],
+  ), UsersModule, ContactsModule, AuthenticationModule, MailerModule],
   controllers: [AppController],
   providers: [AppService, ContactResolver],
 })

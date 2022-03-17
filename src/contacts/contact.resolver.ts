@@ -2,7 +2,7 @@ import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from '
 import { Contact } from './models/contact.model';
 import { ContactsService } from './contacts.service';
 import { Req, UseGuards } from '@nestjs/common';
-import { GraphqlJwtAuthGuard } from 'src/auth/graphql-jwt.auth.guard';
+import { GraphqlJwtAuthGuard } from 'src/guards/graphql-jwt.auth.guard';
 import RequestWithUSer from 'src/auth/requestWithUser.interface';
 /* import { parseResolveInfo, ResolveTree, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info'; */
 import { CreateContactInput } from './inputs/contact.input';

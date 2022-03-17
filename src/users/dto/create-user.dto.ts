@@ -5,6 +5,5 @@ export class CreateUserDto {
     password: string;
     name: string;
     authConfirmToken: string;
-    isVerified: boolean;
     roles: string;
 }

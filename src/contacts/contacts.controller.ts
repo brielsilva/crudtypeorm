@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, SetMetadata } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import EmailAuthGuard from 'src/auth/email.auth.guard';
-import JwtAuthenticationGuard from 'src/auth/jwt-authentication.guard';
+import EmailAuthGuard from 'src/guards/email.auth.guard';
+import JwtAuthenticationGuard from 'src/guards/jwt-authentication.guard';
 import RequestWithUSer from 'src/auth/requestWithUser.interface';
 import { Roles } from 'src/users/entities/roles.decorator';
 import { Role } from 'src/users/entities/roles.enum';

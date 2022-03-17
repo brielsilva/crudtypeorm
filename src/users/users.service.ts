@@ -4,6 +4,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
+import { UserState } from 'src/enums/users.states';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +14,26 @@ export class UsersService {
   async findAll() {
     const users = await this.usersRepository.find();
     return users;
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.usersRepository.update(userId, {
+      currentHashedRefreshToken
+    });
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
+    const user = await this.findById(userId);
+ 
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken
+    );
+ 
+    if (isRefreshTokenMatching) {
+      return user;
+    }
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -40,8 +62,8 @@ export class UsersService {
     throw new HttpException('User not found',HttpStatus.NOT_FOUND);
   }
 
-  async updateVerifiedUser(code) {
-    await this.usersRepository.update({authConfirmToken: code}, {isVerified: true, authConfirmToken: undefined});
+  async updateVerifiedUser(user: User, state: UserState) {
+    await this.usersRepository.update({id: user.id}, { state: state,authConfirmToken: undefined});
   }
 
 }

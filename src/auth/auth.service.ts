@@ -5,46 +5,53 @@ import { UsersService } from "src/users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { JwtService } from '@nestjs/jwt';
 import TokenPayload from './tokenPayload.interface';
-import { MailerService } from '@nestjs-modules/mailer';
+import MailerService from '../mailer/mailer_service';
 import { User } from 'src/users/entities/user.entity';
-import { Roles } from 'src/users/entities/roles.decorator';
 import { Role } from 'src/users/entities/roles.enum';
-import * as sgMail from '@sendgrid/mail';
+import MailOptions from 'src/mailer/mailer_options_interface';
+import { ConfigService } from '@nestjs/config';
+import { UserState } from 'src/enums/users.states';
 
 @Injectable()
 export class AuthenticationService {
     private code;
-    constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService, private readonly mailerService: MailerService) {
+    constructor(
+      private readonly configService: ConfigService,private readonly usersService: UsersService, private readonly jwtService: JwtService, private readonly mailerService: MailerService) {
       this.code = Math.floor(10000 + Math.random() * 90000);
     }
 
-    public getookieWithJwtToken(userId: number) {
-        const payload: TokenPayload = { userId};
-        const token = this.jwtService.sign(payload);
-        return `Authentication=${token};  HttpOnly; Path=/; Max-Age=${5*60}`;
+    public getCookieWithJwtAccessToken(userId: number) {
+      const payload: TokenPayload = { userId };
+      const token = this.jwtService.sign(payload, {
+        secret: `${process.env.JWT_ACCESS_TOKEN_SECRET}`,
+        expiresIn: 60 * 60
+      });
+      return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}`;
+    }
+   
+    public getCookieWithJwtRefreshToken(userId: number) {
+      const payload: TokenPayload = { userId };
+      const token = this.jwtService.sign(payload, {
+        secret: `${process.env.JWT_REFRESH_TOKEN_SECRET}`,
+        expiresIn: 60 * 60
+      });
+      const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}`;
+      return {
+        cookie,
+        token
+      }
     }
 
     async sendConfirmationEmail(user: User) {
-      const {email, name} = await user;
-      console.log(email);
-      sgMail.setApiKey(`${process.env.PASS}`);
+      const { email } = user;
       try {
-        const something = await sgMail.send({
+        const messageSucessuful: MailOptions = {
           to: email,
-          subject: 'Authenticate User! Confirm Email',
           from: 'gabrielcostasilva500@gmail.com',
           text: `${this.code}`,
-        });
-        console.log(something);
-        /* const result = await this.mailerService.sendMail({
-          to: email,
-          subject: 'Welcome to CRUD API! Confirm Email',
-          template: 'confirm',
-          context: {
-            name,
-            code: this.code
-          }
-        }); */
+          subject: 'Authenticate User! Confirm Email'
+        };
+        await this.mailerService.sendMail(messageSucessuful);
       } catch(err) {
         console.log(err.response.body);
       }
@@ -61,7 +68,6 @@ export class AuthenticationService {
               ...registrationData,
                 password: hashedPassword,
                 authConfirmToken: `${this.code}`,
-                isVerified: false,
                 roles: Role.USER
             }
             const createdUser = await this.usersService.create(user);
@@ -105,7 +111,7 @@ export class AuthenticationService {
           if(!user) {
             return new HttpException('Verification code has expired or not found', HttpStatus.BAD_REQUEST);
           }
-          await this.usersService.updateVerifiedUser(code);
+          await this.usersService.updateVerifiedUser(user, UserState.ACTIVE);
           return true;
         } catch(error) {
           return new HttpException(error,HttpStatus.INTERNAL_SERVER_ERROR);

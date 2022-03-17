@@ -1,5 +1,7 @@
 import { Contact } from "src/contacts/entities/contact.entity";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {Exclude} from 'class-transformer';
+import { UserState } from '../../enums/users.states';
 
 @Entity('users')
 export class User extends BaseEntity{
@@ -10,18 +12,30 @@ export class User extends BaseEntity{
     name: string
 
     @Column({ nullable: false})
+    @Exclude()
     password: string
 
     @Column({ unique: true, nullable: false})
     email: string
 
     @Column({select: false, nullable: true})
+    @Exclude()
     authConfirmToken: string
 
-    @Column({default: false, nullable: true})
-    isVerified: boolean;
+    @Column({
+        nullable: true
+      })
+    @Exclude()
+    currentHashedRefreshToken?: string;
 
-    @OneToMany(() => Contact,(contact: Contact) => contact.user, {cascade: true,eager: true}) 
+    @Column({
+      type: "enum",
+      enum: UserState,
+      default: UserState.UNVERIFIED
+    })
+    state: UserState
+
+    @OneToMany(() => Contact,(contact: Contact) => contact.user) 
     contacts: Contact[];
 
     @CreateDateColumn()
