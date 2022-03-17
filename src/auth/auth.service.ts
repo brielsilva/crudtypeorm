@@ -5,15 +5,16 @@ import { UsersService } from "src/users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { JwtService } from '@nestjs/jwt';
 import TokenPayload from './tokenPayload.interface';
-import { MailerService } from '@nestjs-modules/mailer';
-import { User } from 'src/users/entities/user.entity';
-import { Roles } from 'src/users/entities/roles.decorator';
 import { Role } from 'src/users/entities/roles.enum';
+import  MailerService  from 'src/mailer/mailer_service';
+import MailOptions from 'src/mailer/mailer_options_interface';
+import { UserState } from 'src/enums/users.states';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthenticationService {
     private code;
-    constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService, private readonly mailerService: MailerService) {
+    constructor(private readonly mailerService: MailerService,private readonly usersService: UsersService, private readonly jwtService: JwtService) {
       this.code = Math.floor(10000 + Math.random() * 90000);
     }
 
@@ -22,25 +23,6 @@ export class AuthenticationService {
         const token = this.jwtService.sign(payload);
         return `Authentication=${token};  HttpOnly; Path=/; Max-Age=${5*60}`;
     }
-
-    async sendConfirmationEmail(user: User) {
-      const {email, name} = await user;
-      console.log(email);
-      try {
-        const result = await this.mailerService.sendMail({
-          to: email,
-          subject: 'Welcome to CRUD API! Confirm Email',
-          template: 'confirm',
-          context: {
-            name,
-            code: this.code
-          }
-        });
-        console.log(result);
-      } catch(err) {
-        console.log(err);
-      }
-    }
     
     public getCookieForLogOut(){
         return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
@@ -48,39 +30,35 @@ export class AuthenticationService {
 
     public async register(registrationData: RegisterDto) {
         const hashedPassword = await bcrypt.hash(registrationData.password,10);
+        console.log(this.code);
+        const hashCode = await bcrypt.hash(this.code.toString(),10)
         try {
-            const user = {
+            const user: CreateUserDto = {
               ...registrationData,
                 password: hashedPassword,
-                authConfirmToken: `${this.code}`,
-                isVerified: false,
+                authConfirmToken: `${hashCode}`,
+                state: UserState.UNVERIFIED,
                 roles: Role.USER
             }
             const createdUser = await this.usersService.create(user);
             createdUser.password = undefined;
-            //await this.sendConfirmationEmail(createdUser);
+            const message: MailOptions = {
+              to: registrationData.email,
+              subject: 'Confirm Email',
+              text: `${this.code}`,
+              from: 'gabrielcostasilva500@gmail.com'
+            };
+            await this.mailerService.sendMail(message);
             return createdUser;
         } catch(error) {
+          console.log(error);
             if (error?.code === PostgresErrorCode.UniqueViolation) {
                 throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
             }
             throw new HttpException('Something went Wrong', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    // S - Single responsability => Tava fazendo o hash do password e pegando o user
-    // public async getAuthenticatedUser(email: string, hashedPassword: string) {
-    //     try {
-    //         const user = await this.usersService.findByEmail(email);
-    //         const isPasswordMatching = await bcrypt.compare(hashedPassword,user.password);
-    //         if(!isPasswordMatching) {
-    //             throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-    //         }
-    //         user.password = undefined;
-    //         return user;
-    //     } catch (error) {
-    //         throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-    //     }
-    // }
+
     public async getAuthenticatedUser(email: string, plainTextPassword: string) {
       try {
           const user = await this.usersService.findByEmail(email);
@@ -91,13 +69,17 @@ export class AuthenticationService {
           throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
         }
       }
-      public async verifyAccount(code: string) {
+      public async verifyAccount(email: string,code: string) {
         try {
-          const user = await this.usersService.findByCode(code);
-          if(!user) {
+          const user = await this.usersService.findByEmail(email);
+          const userCode = await this.usersService.findByIdWithCode(user.id);
+          console.log(userCode);
+          console.log(user);
+          const result = await bcrypt.compare(code,userCode.authConfirmToken);
+          if(!result) {
             return new HttpException('Verification code has expired or not found', HttpStatus.BAD_REQUEST);
           }
-          await this.usersService.updateVerifiedUser(code);
+          await this.usersService.updateVerifiedUser(userCode.authConfirmToken);
           return true;
         } catch(error) {
           return new HttpException(error,HttpStatus.INTERNAL_SERVER_ERROR);

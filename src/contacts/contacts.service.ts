@@ -21,7 +21,7 @@ export class ContactsService {
     return contact;
   }
 
-  async findAll(user: User) {
+  async findAll() {
     const contacts = await this.contactsRepository.find({relations: ['user']});
     console.log(contacts);
     return contacts;

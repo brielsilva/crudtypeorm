@@ -1,10 +1,9 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
-import EmailAuthGuard from "../guards/email.auth.guard";
 import { AuthenticationService } from "./auth.service";
 import RegisterDto from "./dto/register.dto";
-import JwtAuthenticationGuard from "./jwt-authentication.guard";
-import { LocalAuthenticationGuard } from "./localAuthentication.guard";
+import JwtAuthenticationGuard from "../guards/jwt-authentication.guard";
+import { LocalAuthenticationGuard } from "../guards/localAuthentication.guard";
 import RequestWithUSer from "./requestWithUser.interface";
 
 @Controller('authentication')
@@ -30,7 +29,7 @@ export class AuthenticationController {
 
     @Post('verify')
     async Verify(@Body() body) {
-      return await this.authenticationService. verifyAccount(body.code)
+      return await this.authenticationService. verifyAccount(body.email,body.code);
     }
 
     @UseGuards(JwtAuthenticationGuard)

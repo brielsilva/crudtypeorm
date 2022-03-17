@@ -1,12 +1,11 @@
-import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Contact } from './models/contact.model';
 import { ContactsService } from './contacts.service';
-import { Req, UseGuards } from '@nestjs/common';
-import { GraphqlJwtAuthGuard } from 'src/auth/graphql-jwt.auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { GraphqlJwtAuthGuard } from '../guards/graphql-jwt.auth.guard';
 import RequestWithUSer from 'src/auth/requestWithUser.interface';
 /* import { parseResolveInfo, ResolveTree, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info'; */
-import { CreateContactInput } from './inputs/contact.input';
-import { User } from 'src/users/entities/user.entity';
+import { CreateContactInput } from './inputs/contact.input';'src/users/entities/user.entity';
  
 @Resolver(() => Contact)
 export class ContactResolver {
@@ -17,8 +16,7 @@ export class ContactResolver {
   @Query(() => [Contact])
   @UseGuards(GraphqlJwtAuthGuard)
   async contact(@Context() context: {req: RequestWithUSer}) {
-    console.log('AQUI PORRA');
-    const contacts = await this.contactsService.findAll(context.req.user);
+    const contacts = await this.contactsService.findAll();
     return contacts;
   }
 

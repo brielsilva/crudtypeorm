@@ -1,6 +1,7 @@
 import { Contact } from "src/contacts/entities/contact.entity";
 import { UserState } from "src/enums/users.states";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Exclude } from "class-transformer";
 
 @Entity('users')
 export class User extends BaseEntity{
@@ -11,12 +12,14 @@ export class User extends BaseEntity{
     name: string
 
     @Column({ nullable: false})
+    @Exclude()
     password: string
 
     @Column({ unique: true, nullable: false})
     email: string
 
     @Column({select: false, nullable: true})
+    @Exclude()
     authConfirmToken: string
 
     @Column({

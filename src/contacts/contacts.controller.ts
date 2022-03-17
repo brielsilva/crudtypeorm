@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import EmailAuthGuard from 'src/auth/email.auth.guard';
-import JwtAuthenticationGuard from 'src/auth/jwt-authentication.guard';
+import EmailAuthGuard from 'src/guards/email.auth.guard';
+import JwtAuthenticationGuard from 'src/guards/jwt-authentication.guard';
 import RequestWithUSer from 'src/auth/requestWithUser.interface';
 import { Roles } from 'src/users/entities/roles.decorator';
 import { Role } from 'src/users/entities/roles.enum';
@@ -16,7 +16,7 @@ export class ContactsController {
   constructor(private readonly contactsService: ContactsService, @InjectRepository(User) private usersRepository: Repository<User>) {}
 
   @Post()
-  @Roles(Role.ADMIN)
+  @Roles(Role.USER)
   @UseGuards(EmailAuthGuard)
   @UseGuards(JwtAuthenticationGuard)
   async create(@Req() request: RequestWithUSer,@Body() createContactDto: CreateContactDto) {
@@ -25,11 +25,10 @@ export class ContactsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthenticationGuard)
   @UseGuards(EmailAuthGuard)
-  async findAll(@Param('id') id:string) {
-    const user = await this.usersRepository.findOne(id);
-    return this.contactsService.findAll(user);
+  @UseGuards(JwtAuthenticationGuard)
+  async findAll() {
+    return this.contactsService.findAll();
   }
 
   @Get(':id')

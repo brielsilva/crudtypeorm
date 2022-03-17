@@ -27,8 +27,9 @@ export class UsersService {
     return user;
   }
 
-  async findByCode(code: string) {
-    const user = await this.usersRepository.findOne({ authConfirmToken: code });
+  async findByIdWithCode(id: number) {
+    //const user = await this.usersRepository.findOne({ authConfirmToken: code });
+    const user = await this.usersRepository.createQueryBuilder('user').addSelect('user.authConfirmToken').where('user.id = :id', {id: id}).getOne();
     return user;
   }
 

@@ -1,10 +1,10 @@
-import { Contact } from "src/contacts/entities/contact.entity";
+import { UserState } from "src/enums/users.states";
 
 export class CreateUserDto {
     email: string;
     password: string;
     name: string;
     authConfirmToken: string;
-    isVerified: boolean;
+    state: UserState;
     roles: string;
 }
