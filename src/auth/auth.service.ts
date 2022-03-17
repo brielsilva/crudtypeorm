@@ -58,7 +58,7 @@ export class AuthenticationService {
             }
             const createdUser = await this.usersService.create(user);
             createdUser.password = undefined;
-            await this.sendConfirmationEmail(createdUser);
+            //await this.sendConfirmationEmail(createdUser);
             return createdUser;
         } catch(error) {
             if (error?.code === PostgresErrorCode.UniqueViolation) {

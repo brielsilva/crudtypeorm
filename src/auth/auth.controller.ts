@@ -1,5 +1,6 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
+import EmailAuthGuard from "../guards/email.auth.guard";
 import { AuthenticationService } from "./auth.service";
 import RegisterDto from "./dto/register.dto";
 import JwtAuthenticationGuard from "./jwt-authentication.guard";
@@ -28,7 +29,6 @@ export class AuthenticationController {
     }
 
     @Post('verify')
-    @Post('/verify')
     async Verify(@Body() body) {
       return await this.authenticationService. verifyAccount(body.code)
     }

@@ -1,4 +1,5 @@
 import { Contact } from "src/contacts/entities/contact.entity";
+import { UserState } from "src/enums/users.states";
 import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
@@ -18,8 +19,12 @@ export class User extends BaseEntity{
     @Column({select: false, nullable: true})
     authConfirmToken: string
 
-    @Column({default: false, nullable: true})
-    isVerified: boolean;
+    @Column({
+      type: "enum",
+      enum: UserState,
+      default: UserState.UNVERIFIED
+    })
+    state: UserState;
 
     @OneToMany(() => Contact,(contact: Contact) => contact.user, {cascade: true,eager: true}) 
     contacts: Contact[];

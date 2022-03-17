@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { UserState } from 'src/enums/users.states';
 
 @Injectable()
 export class UsersService {
@@ -41,7 +42,7 @@ export class UsersService {
   }
 
   async updateVerifiedUser(code) {
-    await this.usersRepository.update({authConfirmToken: code}, {isVerified: true, authConfirmToken: undefined});
+    await this.usersRepository.update({authConfirmToken: code}, {state: UserState.ACTIVE, authConfirmToken: undefined});
   }
 
 }
