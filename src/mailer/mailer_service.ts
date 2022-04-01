@@ -9,7 +9,7 @@ export default class EmailService {
     private readonly configService: ConfigService
   ) {
       //sgMail.setApiKey(configService.get('SENDGRID_PASS'));
-      sgMail.setApiKey('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');
+      sgMail.setApiKey(`${process.env.PASS}`);
   }
 
   sendMail(options: MailOptions) {

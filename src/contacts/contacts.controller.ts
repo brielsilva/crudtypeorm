@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import EmailAuthGuard from 'src/guards/email.auth.guard';
 import JwtAuthenticationGuard from 'src/guards/jwt-authentication.guard';
@@ -13,15 +23,21 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Controller('contacts')
 export class ContactsController {
-  constructor(private readonly contactsService: ContactsService, @InjectRepository(User) private usersRepository: Repository<User>) {}
+  constructor(
+    private readonly contactsService: ContactsService,
+    @InjectRepository(User) private usersRepository: Repository<User>,
+  ) {}
 
   @Post()
   @Roles(Role.USER)
   @UseGuards(EmailAuthGuard)
   @UseGuards(JwtAuthenticationGuard)
-  async create(@Req() request: RequestWithUSer,@Body() createContactDto: CreateContactDto) {
+  async create(
+    @Req() request: RequestWithUSer,
+    @Body() createContactDto: CreateContactDto,
+  ) {
     const user = request.user;
-    return await this.contactsService.create(createContactDto,user);
+    return await this.contactsService.create(createContactDto, user);
   }
 
   @Get()
