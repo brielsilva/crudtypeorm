@@ -82,7 +82,7 @@ export class DatabaseSeederService implements OnModuleInit {
       },
       {
         class: '7',
-        name: 'Arroz',
+        name: 'Salada',
         healthy: true,
         calories: 130,
         protein: 2.7,
@@ -90,7 +90,7 @@ export class DatabaseSeederService implements OnModuleInit {
       },
       {
         class: '8',
-        name: 'Salada',
+        name: 'Spaguetti',
         healthy: true,
         calories: 33,
         protein: 2.9,
@@ -98,7 +98,7 @@ export class DatabaseSeederService implements OnModuleInit {
       },
       {
         class: '9',
-        name: 'Spaguetti',
+        name: 'Arroz',
         healthy: true,
         calories: 158,
         protein: 5.8,
