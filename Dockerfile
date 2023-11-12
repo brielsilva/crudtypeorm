@@ -1,4 +1,11 @@
-FROM postgres:13.0
+FROM node:18
 
-ENV POSTGRES_PASSWORD mysecretpassword
-ENV POSTGRES_DB test
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN yarn
+
+COPY . .
+
+CMD [ "npm", "run", "start:dev" ]

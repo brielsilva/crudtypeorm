@@ -1,46 +1,79 @@
-import { Contact } from "src/contacts/entities/contact.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import {Exclude} from 'class-transformer';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { UserState } from '../../enums/users.states';
-
+import {
+  IsDate,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { UserToNutri } from 'src/user_to_nutri/entities/user_to_nutri.entity';
+import { Nutri } from 'src/nutri/entities/nutri.entity';
+import { PhotoUser } from 'src/photo_user/entities/photo_user.entity';
 @Entity('users')
-export class User extends BaseEntity{
-    @PrimaryGeneratedColumn()
-    id: number;
+export class User extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({nullable: false})
-    name: string
+  @Column({ length: 30 })
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
 
-    @Column({ nullable: false})
-    @Exclude()
-    password: string
+  @Column({ length: 100 })
+  @IsString()
+  lastName: string;
 
-    @Column({ unique: true, nullable: false})
-    email: string
+  @Column()
+  @IsString()
+  salt: string;
 
-    @Column({select: false, nullable: true})
-    @Exclude()
-    authConfirmToken: string
+  @Column()
+  @IsDate()
+  birth: Date;
 
-    @Column({
-        nullable: true
-      })
-    @Exclude()
-    currentHashedRefreshToken?: string;
+  @Column({ length: 11 })
+  @IsString()
+  cpf: string;
 
-    @Column({
-      type: "enum",
-      enum: UserState,
-      default: UserState.UNVERIFIED
-    })
-    state: UserState
+  @Column()
+  @IsEmail()
+  email: string;
 
-    @OneToMany(() => Contact,(contact: Contact) => contact.user) 
-    contacts: Contact[];
+  @Column()
+  @IsString()
+  hashedPassword: string;
 
-    @CreateDateColumn()
-    createdAt: Date
+  @Column({
+    nullable: true,
+  })
+  @Exclude()
+  currentHashedRefreshToken?: string;
 
-    @Column()
-    roles: string
+  // @OneToMany(() => UserPhysicHistoryMonthly, (history) => history.user)
+  // physicHistory: UserPhysicHistoryMonthly[];
+
+  @OneToOne(() => Nutri, (nutri) => nutri.user, { nullable: true })
+  nutriProfile: Nutri;
+
+  @OneToMany(() => UserToNutri, (userToNutri) => userToNutri.user)
+  nutriConnections: UserToNutri[];
+
+  @OneToMany(() => PhotoUser, (photoUser) => photoUser.user, { eager: true })
+  photos: PhotoUser[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Column()
+  roles: string;
 }
