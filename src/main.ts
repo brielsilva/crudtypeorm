@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { json } from 'body-parser';
 require('dotenv').config();
 
 async function bootstrap() {
@@ -13,6 +14,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
+
+  app.use(json({ limit: '100mb' }));
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

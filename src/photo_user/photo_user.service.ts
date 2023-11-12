@@ -52,7 +52,8 @@ export class PhotoUserService {
   }
 
   async analyzeImageWithExternalApi(base64Image: string): Promise<any> {
-    const url = 'https://detect.roboflow.com/food-zuaz7/1?api_key=fake';
+    const url =
+      'https://detect.roboflow.com/food-zuaz7/1?api_key=WDPatX02Sud2szmRq0rx';
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
     };
@@ -97,34 +98,34 @@ export class PhotoUserService {
   }
 
   async handle(create: CreatePhotoUserDto): Promise<any> {
-    // const analyze = await this.analyzeImageWithExternalApi(create.base64Image);
-    // const classList = this.extractClassesFromPredictions(analyze);
-    // if (!classList) {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.BAD_REQUEST,
-    //       error: 'No classes provided.',
-    //     },
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-    // const foods = await this.findFoodsByClasses(classList);
-    // if (!foods.length) {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_FOUND,
-    //       error: 'No foods found for the provided classes.',
-    //     },
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
+    const analyze = await this.analyzeImageWithExternalApi(create.base64Image);
+    const classList = this.extractClassesFromPredictions(analyze);
+    if (!classList) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'No classes provided.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const foods = await this.findFoodsByClasses(classList);
+    if (!foods.length) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'No foods found for the provided classes.',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
     await this.saveImage(create);
-    // const dietAnalysis = this.analyzeDiet(foods);
+    const dietAnalysis = this.analyzeDiet(foods);
 
-    // return {
-    //   statusDiet: dietAnalysis,
-    //   foodList: foods,
-    // };
+    return {
+      statusDiet: dietAnalysis,
+      foodList: foods,
+    };
   }
 
   // Add more methods as needed for your application

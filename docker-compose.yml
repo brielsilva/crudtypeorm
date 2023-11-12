@@ -8,6 +8,7 @@ services:
     container_name: nest-docker-postgres
     ports:
       - '3000:3000'
+    command: sh -c 'yarn start:dev'
     env_file:
       - .env
     depends_on:
